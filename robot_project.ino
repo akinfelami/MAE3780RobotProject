@@ -58,6 +58,11 @@ int main(void){
   turnLeft();
   _delay_ms(1000);
 
+    forward();
+  _delay_ms(1000);
+
+
+
 
 
 }
