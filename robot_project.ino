@@ -37,14 +37,14 @@ void turnLeft(){
 
 int main(void){
   
-  forward()
-  turnRight()
-  forward()
+  forward();
+  turnRight();
+  forward();
 
-  turnLeft()
-  forward()
+  turnLeft();
+  forward();
 
-  backward()
+  backward();
 
 
 }
