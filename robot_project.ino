@@ -42,7 +42,7 @@ int main(void){
 
   turnRight();
   _delay_ms(1000);
-  
+
   forward();
   _delay_ms(1000);
 
@@ -54,6 +54,10 @@ int main(void){
 
   backward();
   _delay_ms(1000);
+
+  turnLeft();
+  _delay_ms(1000);
+
 
 
 }
