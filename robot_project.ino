@@ -38,13 +38,22 @@ void turnLeft(){
 int main(void){
   
   forward();
+  _delay_ms(1000);
+
   turnRight();
+  _delay_ms(1000);
+  
   forward();
+  _delay_ms(1000);
 
   turnLeft();
+  _delay_ms(1000);
+
   forward();
+  _delay_ms(1000);
 
   backward();
+  _delay_ms(1000);
 
 
 }
