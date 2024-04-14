@@ -1,4 +1,3 @@
-
 void forward(){
   DDRD = 0b01010000;    // pin 6 (left) forward and 4 forward(right)
   PORTD = 0b01010000; // set to high to move forward (use PWM to control speed)
@@ -19,6 +18,29 @@ void turnLeft(){
     // pin 4 forward and pin 7 backward
   DDRD = 0b10010000;
   PORTD = 0b10010000;
+}
+
+// period : stores the value of the output wave period
+volatile float preiod;
+
+// timer: stores the value of TIMER1
+volatile unsigned int timer1Value = 0;
+
+ISR(PCINT0_vect)
+{
+  // resets the timer to zero on a rising edge,
+  if (PINB & 0b00000100)
+  {
+    TCNT1 = 0;
+  }
+  else
+  {
+    timer1Value = TCNT1;
+  }
+}
+
+void initColor(){
+  DDRB = 0b00000000; // pins 11 and 12 as outputs
 }
 
 
