@@ -75,3 +75,4 @@ int main(void){
   _delay_ms(750);
 
   DDRD = 0b00000000; 
+}
