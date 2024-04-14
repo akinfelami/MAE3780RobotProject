@@ -48,28 +48,28 @@ void initColor(){
 int main(void){
   
   forward();
-  _delay_ms(5000);
+  _delay_ms(2000);
 
   turnRight();
   _delay_ms(750);
 
   forward();
-  _delay_ms(5000);
+  _delay_ms(2000);
 
   turnLeft();
   _delay_ms(750);
 
   forward();
-  _delay_ms(2500);
+  _delay_ms(1000);
 
   backward();
-  _delay_ms(7500);
+  _delay_ms(3000);
 
   turnLeft();
   _delay_ms(750);
 
   forward();
-  _delay_ms(5000);
+  _delay_ms(2000);
 
   turnRight();
   _delay_ms(750);
