@@ -1,5 +1,4 @@
 
-
 void forward(){
 
   DDRD = 0b01010000;    // pin 6 (left) forward and 4 forward(right)
@@ -39,28 +38,30 @@ void turnLeft(){
 int main(void){
   
   forward();
-  _delay_ms(1000);
+  _delay_ms(5000);
 
   turnRight();
-  _delay_ms(1000);
+  _delay_ms(750);
 
   forward();
-  _delay_ms(1000);
+  _delay_ms(5000);
 
   turnLeft();
-  _delay_ms(1000);
+  _delay_ms(750);
 
   forward();
-  _delay_ms(1000);
+  _delay_ms(2500);
 
   backward();
-  _delay_ms(1000);
+  _delay_ms(7500);
 
   turnLeft();
-  _delay_ms(1000);
+  _delay_ms(750);
 
   forward();
-  _delay_ms(1000);
+  _delay_ms(5000);
 
-  DDRD = 0b00000000;
-}
+  turnRight();
+  _delay_ms(750);
+
+  DDRD = 0b00000000; /
