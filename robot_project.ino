@@ -75,45 +75,47 @@ int main(void){
 
 
  // Initialize color sensor
-  Serial.begin(9600);
-  initColor();
-  sei();
+ 
+//  Serial.begin(9600);
+//  initColor();
+//  sei();
 
-  while(1){
-    getColor();
+ // while(1){
+    //getColor();
 
-    Serial.println(period);
-    
-    
+    //Serial.println(period);
+       
     forward();
-    _delay_ms(5000);
+    _delay_ms(2000);
 
     turnRight();
-    _delay_ms(750);
+    _delay_ms(700);
 
     forward();
-    _delay_ms(5000);
+    _delay_ms(2000);
 
     turnLeft();
-    _delay_ms(750);
+    _delay_ms(700);
 
     forward();
-    _delay_ms(2500);
+    _delay_ms(1000);
 
     backward();
-    _delay_ms(7500);
+    _delay_ms(3000);
 
     turnLeft();
-    _delay_ms(750);
+    _delay_ms(700);
 
     forward();
-    _delay_ms(5000);
+    _delay_ms(2000);
 
     turnRight();
-    _delay_ms(750);
+    _delay_ms(700);
 
     DDRD = 0b00000000; 
-  }
+
+    _delay_ms(1000);
+  
 
 }
   
