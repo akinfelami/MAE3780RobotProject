@@ -1,3 +1,8 @@
+
+// --- Global Variables ---
+
+int PIN_COLOR_SENSOR = 0b00000100; // pin 10 (color sensor)
+
 void forward()
 {
   DDRD = 0b01010000;  // pin 6 (left) forward and 4 forward(right)
@@ -30,12 +35,11 @@ volatile float period;
 // timer: stores the value of TIMER1
 volatile unsigned int timer1Value = 0;
 
-// Interrupt service routine
-
+// Interrupt service routine (color sensor)
 ISR(PCINT0_vect)
 {
   // resets the timer to zero on a rising edge,
-  if (PINB & 0b00000100)
+  if (PINB & PIN_COLOR_SENSOR)
   {
     TCNT1 = 0;
   }
@@ -47,7 +51,7 @@ ISR(PCINT0_vect)
 
 void initColor()
 {
-  // DDRB = 0b00000000; // ALL pins on B as inputs.
+  DDRB = 0b00000000; // ALL pins on B as inputs.
   sei();
 
   // Initialize interrupts
@@ -62,13 +66,13 @@ void initColor()
 int getColor()
 {
 
-  PCMSK0 |= 0b00000100; // Enable pin change interrupt for pin 10
+  PCMSK0 |= PIN_COLOR_SENSOR; // Enable pin change interrupt for pin 10
 
   // short delay (5 ~10 milliseconds)
 
   _delay_ms(5);
 
-  PCMSK0 &= ~0b00000100; // Disable pin change interrupt for pin 10
+  PCMSK0 &= ~PIN_COLOR_SENSOR; // Disable pin change interrupt for pin 10
 
   period = timer1Value * 0.0625 * 2; // in microseconds
 }
