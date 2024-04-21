@@ -2,6 +2,8 @@
 // --- Global Variables ---
 
 int PIN_COLOR_SENSOR = 0b00000100; // pin 10 (color sensor)
+int PIN_QTI_LEFT = 0b100000;       // 13
+int PIN_QTI_RIGHT = 0b000001;      // 8
 
 void forward()
 {
@@ -51,7 +53,6 @@ ISR(PCINT0_vect)
 
 void initColor()
 {
-  DDRB = 0b00000000; // ALL pins on B as inputs.
   sei();
 
   // Initialize interrupts
@@ -81,12 +82,21 @@ int main(void)
 {
 
   // Initialize color sensor
+  DDRB = 0b00000000; // ALL pins on B as inputs.
   Serial.begin(9600);
   initColor();
+  _delay_ms(10)
   while (1)
   {
     getColor();
     Serial.println(period);
+    bool edge_left = PINB & PIN_QTI_LEFT;
+    bool edge_right = PINB & PIN_QTI_RIGHT;
+    Serial.print("edge_left:");
+    Serial.print(edge_left);
+    Serial.print(", edge_right:");
+    Serial.print(edge_right);
+    Serial.println();
     _delay_ms(1000);
   }
 }
