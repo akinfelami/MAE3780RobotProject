@@ -42,29 +42,29 @@ ISR(PCINT0_vect)
 }
 
 void initColor(){
-  DDRB = 0b00000000; // ALL pins on B as inputs. 
+  // DDRB = 0b00000000; // ALL pins on B as inputs. 
+  sei();
 
+  // Initialize interrupts
+  PCICR |= 0b00000001; // Enable PCIE0
 
   // Initialize timer
   TCCR1A = 0b00000000; // Normal Mode
   TCCR1B = 0b00000001; // 1 pre-scalar
+  TCINT1 = 0; //reset timer
  
 }
 
 int getColor(){
 
-  //. enable specific bit for pin change interrupt
-  PCICR = 0b00000001; // Enable PCIE0 
-  PCMSK0 = 0b00000100; // Enable PCINT2 (pin 10 on board)
+
+  PCMSK0 |= 0b00000100; // Enable pin change interrupt for pin 10
 
   // short delay (5 ~10 milliseconds)
 
-  _delay_ms(10);
+  _delay_ms(5);
 
-
-  // diable interrupt when we calculate period
-  PCICR = 0b00000000; // Enable PCIE0
-  PCMSK0 = 0b00000000; // Disable PCINT2
+  PCMSK0 &= ~0b00000100; // Disable pin change interrupt for pin 10
 
   period = timer1Value * 0.0625 * 2;
 
