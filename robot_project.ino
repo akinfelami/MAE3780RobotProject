@@ -1,9 +1,19 @@
 
 // --- Global Variables ---
+// period : stores the value of the output wave period
+volatile float colorSensorPeriod;
+
+// timer: stores the value of TIMER1
+volatile unsigned int timer1Value = 0;
 
 int PIN_COLOR_SENSOR = 0b00000100; // pin 10 (color sensor)
 int PIN_QTI_LEFT = 0b100000;       // 13
 int PIN_QTI_RIGHT = 0b000001;      // 8
+
+int MAX_BLUE_PERIOD = 502;
+int MIN_BLUE_PERIOD = 325;
+int MAX_YELLOW_PERIOD = 128;
+int MIN_YELLOW_PERIOD = 35;
 
 void forward()
 {
@@ -31,11 +41,6 @@ void turnLeft()
   PORTD = 0b10010000;
 }
 
-// period : stores the value of the output wave period
-volatile float period;
-
-// timer: stores the value of TIMER1
-volatile unsigned int timer1Value = 0;
 
 // Interrupt service routine (color sensor)
 ISR(PCINT0_vect)
@@ -75,7 +80,7 @@ int getColor()
 
   PCMSK0 &= ~PIN_COLOR_SENSOR; // Disable pin change interrupt for pin 10
 
-  period = timer1Value * 0.0625 * 2; // in microseconds
+  colorSensorPeriod = timer1Value * 0.0625 * 2; // in microseconds
 }
 
 int main(void)
@@ -89,7 +94,8 @@ int main(void)
   while (1)
   {
     getColor();
-    Serial.println(period);
+    Serial.println(colorSensorPeriod);
+
     bool edge_left = PINB & PIN_QTI_LEFT;
     bool edge_right = PINB & PIN_QTI_RIGHT;
     Serial.print("edge_left:");
