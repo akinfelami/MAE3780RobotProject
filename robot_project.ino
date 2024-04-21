@@ -97,6 +97,21 @@ int main(void)
     Serial.print(", edge_right:");
     Serial.print(edge_right);
     Serial.println();
+
+
+    // Color sensor detection logic (Milestone 3):
+    // 1. start by noting home color
+    // 2. always move forward (keeping edge detection logic in mind)
+    // 3. if not at home color, then turn 180 degrees (clockwise for consistency)
+    // 4. drive back to home color, once detected home color (drive forward a tiny bit)
+    // 5. stop
+
+    // Movement logic for when QTI detects edges (might need to pause a bit between detections)
+    // if edge_left and edge_right are both true, (back up a bit and) then turn right (90 degrees)
+    // if edge_left is true and edge_right is false, then turn right (90 degrees)
+    // if edge_left is true and edge_right is false, then turn left (90 degrees)
+
+
     _delay_ms(1000);
   }
 }
