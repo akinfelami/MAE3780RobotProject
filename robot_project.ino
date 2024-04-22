@@ -154,6 +154,7 @@ int main(void)
       turnRight();
       _delay_ms(1400);
       forward();
+      _delays_ms(1000);
     }
 
     // Stopping condition for milestone (3)
