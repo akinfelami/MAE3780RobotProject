@@ -85,7 +85,7 @@ int getColor()
   PCMSK0 &= ~PIN_COLOR_SENSOR; // Disable pin change interrupt for pin 10
 
   colorSensorPeriod = timer1Value * 0.0625 * 2; // in microseconds
-  if (colorSensorPeriod >= 200)
+  if (colorSensorPeriod >= 200) // this could also be black btw
   {
     return BLUE;
   }
@@ -102,7 +102,7 @@ int main(void)
   DDRB = 0b00000000; // ALL pins on B as inputs.
   Serial.begin(9600);
   initColor();
-  _delay_ms(10);
+  _delay_ms(5);
   homeColor = getColor();
   Serial.println(colorSensorPeriod);
 
@@ -130,16 +130,18 @@ int main(void)
     if (edge_left && edge_right)
     {
       backward();
-      _delay_ms(10);
+      _delay_ms(100);
       turnRight();
     }
     else if (edge_left && !edge_right)
     {
       turnRight();
+      _delay_ms(10)
     }
     else if (!edge_left && edge_right)
     {
       turnLeft();
+      _delay_ms(10)
     }
     else
     {
@@ -149,18 +151,16 @@ int main(void)
     if (currentColor != homeColor)
     {
       Serial.println("Turning 180 degrees");
-      turnLeft();
-      _delay_ms(700);
       turnRight();
-      _delay_ms(700);
+      _delay_ms(1400);
       forward();
     }
 
-    // Stopping condition for milestone
-    if (currentColor == homeColor && (edge_left == true && edge_right == true)){
+    // Stopping condition for milestone (3)
+    if (currentColor == homeColor && (edge_left && edge_right)){
       Serial.println("Stopping");
       backward();
-      _delay_ms(10);
+      _delay_ms(100);
       turnRight();
       DDRD = 0b00000000;
       break;
