@@ -19,6 +19,7 @@ int YELLOW = 0;
 int BLUE = 1;
 
 int homeColor;
+bool leftOpponent;
 
 void forward()
 {
@@ -111,8 +112,12 @@ int main(void)
     int currentColor = getColor();
     bool edge_left = PINB & PIN_QTI_LEFT;
     bool edge_right = PINB & PIN_QTI_RIGHT;
-    Serial.println("edge_left:" + String(edge_left));
-    Serial.println(", edge_right:" + String(edge_right));
+    Serial.print("edge_left:" );
+    Serial.print(edge_left);
+    Serial.println();
+    Serial.print("edge_right:" );
+    Serial.print(edge_right);
+    Serial.println();
 
     // Color sensor detection logic (Milestone 3):
     // 1. start by noting home color
@@ -130,18 +135,18 @@ int main(void)
     if (edge_left && edge_right)
     {
       backward();
-      _delay_ms(100);
+      _delay_ms(1500);
       turnRight();
     }
     else if (edge_left && !edge_right)
     {
       turnRight();
-      _delay_ms(10)
+      _delay_ms(10);
     }
     else if (!edge_left && edge_right)
     {
       turnLeft();
-      _delay_ms(10)
+      _delay_ms(10);
     }
     else
     {
@@ -150,21 +155,25 @@ int main(void)
 
     if (currentColor != homeColor)
     {
+      leftOpponent = true;
       Serial.println("Turning 180 degrees");
       turnRight();
       _delay_ms(1400);
       forward();
-      _delays_ms(1000);
+      // refine this based on how far we need to go in opponents half. 
+      _delay_ms(1000);
     }
 
     // Stopping condition for milestone (3)
     if (currentColor == homeColor && (edge_left && edge_right)){
-      Serial.println("Stopping");
+      if (leftOpponent){
+                Serial.println("Stopping");
       backward();
       _delay_ms(100);
       turnRight();
       DDRD = 0b00000000;
       break;
+      }
     }
   }
 }
