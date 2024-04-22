@@ -135,8 +135,9 @@ int main(void)
     if (edge_left && edge_right)
     {
       backward();
-      _delay_ms(1500);
+      _delay_ms(500);
       turnRight();
+      _delay_ms(500);
     }
     else if (edge_left && !edge_right)
     {
@@ -157,7 +158,7 @@ int main(void)
     {
       leftOpponent = true;
       Serial.println("Turning 180 degrees");
-      turnRight();
+      turnLeft();
       _delay_ms(1400);
       forward();
       // refine this based on how far we need to go in opponents half. 
@@ -167,7 +168,7 @@ int main(void)
     // Stopping condition for milestone (3)
     if (currentColor == homeColor && (edge_left && edge_right)){
       if (leftOpponent){
-                Serial.println("Stopping");
+      Serial.println("Stopping");
       backward();
       _delay_ms(100);
       turnRight();
