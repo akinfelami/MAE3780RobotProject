@@ -15,7 +15,10 @@ int MIN_BLUE_PERIOD = 325;
 int MAX_YELLOW_PERIOD = 128;
 int MIN_YELLOW_PERIOD = 35;
 
-char homeColor[] = "";
+int YELLOW = 0;
+int BLUE = 1;
+
+int homeColor;
 
 void forward()
 {
@@ -82,6 +85,14 @@ int getColor()
   PCMSK0 &= ~PIN_COLOR_SENSOR; // Disable pin change interrupt for pin 10
 
   colorSensorPeriod = timer1Value * 0.0625 * 2; // in microseconds
+  if (colorSensorPeriod >= 200)
+  {
+    return BLUE;
+  }
+  else if (colorSensorPeriod <= 150)
+  {
+    return YELLOW;
+  }
 }
 
 int main(void)
@@ -92,30 +103,16 @@ int main(void)
   Serial.begin(9600);
   initColor();
   _delay_ms(10);
+  homeColor = getColor();
+  Serial.println(colorSensorPeriod);
+
   while (1)
   {
-    getColor();
-    Serial.println(colorSensorPeriod);
-
-    // if (MIN_BLUE_PERIOD <= colorSensorPeriod && colorSensorPeriod <= MAX_BLUE_PERIOD)
-    // {
-    //   homeColor = "blue";
-    // }
-    // else if (MIN_YELLOW_PERIOD <= colorSensorPeriod && colorSensorPeriod <= MAX_YELLOW_PERIOD)
-    // {
-    //   homeColor = "yellow";
-    // }
-
-    // less than 150 = yellow
-    // greater than 200 = blue
-
+    int currentColor = getColor();
     bool edge_left = PINB & PIN_QTI_LEFT;
     bool edge_right = PINB & PIN_QTI_RIGHT;
-    Serial.print("edge_left:");
-    Serial.print(edge_left);
-    Serial.print(", edge_right:");
-    Serial.print(edge_right);
-    Serial.println();
+    Serial.println("edge_left:" + String(edge_left));
+    Serial.println(", edge_right:" + String(edge_right));
 
     // Color sensor detection logic (Milestone 3):
     // 1. start by noting home color
@@ -130,5 +127,43 @@ int main(void)
     // if edge_left is true and edge_right is false, then turn left (90 degrees)
 
     // _delay_ms(10);
+    if (edge_left && edge_right)
+    {
+      backward();
+      _delay_ms(10);
+      turnRight();
+    }
+    else if (edge_left && !edge_right)
+    {
+      turnRight();
+    }
+    else if (!edge_left && edge_right)
+    {
+      turnLeft();
+    }
+    else
+    {
+      forward();
+    }
+
+    if (currentColor != homeColor)
+    {
+      Serial.println("Turning 180 degrees");
+      turnLeft();
+      _delay_ms(700);
+      turnRight();
+      _delay_ms(700);
+      forward();
+    }
+
+    // Stopping condition for milestone
+    if (currentColor == homeColor && (edge_left == true && edge_right == true)){
+      Serial.println("Stopping");
+      backward();
+      _delay_ms(10);
+      turnRight();
+      DDRD = 0b00000000;
+      break;
+    }
   }
 }
