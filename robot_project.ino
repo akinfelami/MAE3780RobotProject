@@ -132,6 +132,15 @@ int main(void)
     // if edge_left is true and edge_right is false, then turn left (90 degrees)
 
     // _delay_ms(10);
+
+
+    // Start at center. 
+    // Angle towards the right -> approach edge. 
+    // Bot will straigten up -> collecting blocks to its side as required. 
+    // Bot recognizes color change -> (moves a little bit -> refined by testing)
+    // Turns left (90 degree) -> collect blocks on its way. 
+    // When hit edge (turn back home)
+    // Timer for if 50 seconds -> go back
     if (edge_left && edge_right)
     {
       backward();
