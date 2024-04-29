@@ -15,6 +15,11 @@ int MIN_BLUE_PERIOD = 325;
 int MAX_YELLOW_PERIOD = 128;
 int MIN_YELLOW_PERIOD = 35;
 
+// timer 0 with 1024 prescaler will count 0.0164 seconds, for 1 minute we need
+int TIME_TO_RETURN_IN_SECONDS = 50;
+bool timeReached = false;
+int overFlowCounter = 0;
+
 int YELLOW = 0;
 int BLUE = 1;
 
@@ -61,6 +66,16 @@ ISR(PCINT0_vect)
   }
 }
 
+// Inteerrupt service routine (timer 0)
+ISR(TIMER0_OVF)
+{
+  overFlowCounter++;
+  if ((overFlowCounter * 0.0164) >= TIME_TO_RETURN_IN_SECONDS)
+  {
+    timeReached = true;
+  }
+}
+
 void initColor()
 {
   sei();
@@ -86,7 +101,7 @@ int getColor()
   PCMSK0 &= ~PIN_COLOR_SENSOR; // Disable pin change interrupt for pin 10
 
   colorSensorPeriod = timer1Value * 0.0625 * 2; // in microseconds
-  if (colorSensorPeriod >= 200) // this could also be black btw
+  if (colorSensorPeriod >= 200)                 // this could also be black btw
   {
     return BLUE;
   }
@@ -94,6 +109,14 @@ int getColor()
   {
     return YELLOW;
   }
+}
+
+void initCountDownTimer()
+{
+
+  TCCR0A = 0b00000000; // Normal Mode
+  TCCR0B = 0b00000101; // 1024 pre-scalar
+  TCNT0 = 0;           // reset timer
 }
 
 int main(void)
@@ -107,45 +130,33 @@ int main(void)
   homeColor = getColor();
   Serial.println(colorSensorPeriod);
 
+  // Start at the center and angle towards the right
+  forward();
+  _delay_ms(200);
+  turnRight();
+  _delay_ms(200);
+
   while (1)
   {
     int currentColor = getColor();
     bool edge_left = PINB & PIN_QTI_LEFT;
     bool edge_right = PINB & PIN_QTI_RIGHT;
-    Serial.print("edge_left:" );
+    Serial.print("edge_left:");
     Serial.print(edge_left);
     Serial.println();
-    Serial.print("edge_right:" );
+    Serial.print("edge_right:");
     Serial.print(edge_right);
     Serial.println();
 
-    // Color sensor detection logic (Milestone 3):
-    // 1. start by noting home color
-    // 2. always move forward (keeping edge detection logic in mind)
-    // 3. if not at home color, then turn 180 degrees (clockwise for consistency)
-    // 4. drive back to home color, once detected home color (drive forward a tiny bit)
-    // 5. stop
-
-    // Movement logic for when QTI detects edges (might need to pause a bit between detections)
-    // if edge_left and edge_right are both true, (back up a bit and) then turn right (90 degrees)
-    // if edge_left is true and edge_right is false, then turn right (90 degrees)
-    // if edge_left is true and edge_right is false, then turn left (90 degrees)
-
-    // _delay_ms(10);
-
-
-    // Start at center. 
-    // Angle towards the right -> approach edge. 
-    // Bot will straigten up -> collecting blocks to its side as required. 
-    // Bot recognizes color change -> (moves a little bit -> refined by testing)
-    // Turns left (90 degree) -> collect blocks on its way. 
+    // Turns left (90 degree) -> collect blocks on its way.
     // When hit edge (turn back home)
     // Timer for if 50 seconds -> go back
+
     if (edge_left && edge_right)
     {
       backward();
       _delay_ms(500);
-      turnRight();
+      turnLeft(); // this used to be turn right
       _delay_ms(500);
     }
     else if (edge_left && !edge_right)
@@ -163,27 +174,38 @@ int main(void)
       forward();
     }
 
-    if (currentColor != homeColor)
+    if (currentColor != homeColor) // Bot recognizes color change -> (moves a little bit -> refined by testing)
     {
       leftOpponent = true;
-      Serial.println("Turning 180 degrees");
-      turnLeft();
-      _delay_ms(1400);
+      Serial.println("Detected opponent color");
       forward();
-      // refine this based on how far we need to go in opponents half. 
+      // test how much to move forward!
+      _delay_ms(100);
+      turnLeft();
+      _delay_ms(750);
+      forward();
+      // refine this based on how far we need to go in opponents half.
       _delay_ms(1000);
     }
 
-    // Stopping condition for milestone (3)
-    if (currentColor == homeColor && (edge_left && edge_right)){
-      if (leftOpponent){
-      Serial.println("Stopping");
-      backward();
-      _delay_ms(100);
-      turnRight();
-      DDRD = 0b00000000;
-      break;
+    // Stopping condition for milestone (4)
+    if (currentColor == homeColor && (edge_left && edge_right))
+    {
+      if (leftOpponent)
+      {
+        Serial.println("Stopping");
+        backward();
+        _delay_ms(100);
+        turnRight();
+        DDRD = 0b00000000;
+        break;
       }
+    }
+    else if (timeReached)
+    // Automatic return after 50 seconds lapse.
+    {
+      Serial.println("Time Reached, heading back home");
+      forward(); // determine orientation first?
     }
   }
 }
