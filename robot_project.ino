@@ -127,14 +127,15 @@ int main(void)
   Serial.begin(9600);
   initColor();
   _delay_ms(5);
+  // Start at the center and angle towards the right
+  forward();
+  _delay_ms(500);
+  turnRight();
+  _delay_ms(200);
   homeColor = getColor();
   Serial.println(colorSensorPeriod);
 
-  // Start at the center and angle towards the right
-  forward();
-  _delay_ms(200);
-  turnRight();
-  _delay_ms(200);
+
 
   while (1)
   {
@@ -161,11 +162,13 @@ int main(void)
     }
     else if (edge_left && !edge_right)
     {
+      Serial.println("edge left and !edge right");
       turnRight();
       _delay_ms(10);
     }
     else if (!edge_left && edge_right)
     {
+      Serial.println("!edge left and edge right");
       turnLeft();
       _delay_ms(10);
     }
@@ -180,7 +183,7 @@ int main(void)
       Serial.println("Detected opponent color");
       forward();
       // test how much to move forward!
-      _delay_ms(100);
+      _delay_ms(750);
       turnLeft();
       _delay_ms(750);
       forward();
