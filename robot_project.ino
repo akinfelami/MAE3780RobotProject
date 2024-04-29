@@ -153,10 +153,19 @@ int main(void)
     // When hit edge (turn back home)
     // Timer for if 50 seconds -> go back
 
+    if(currentColor == homeColor){
+      if (leftOpponent){
+        forward();
+        // _delay_ms(50);
+        DDRD = 0b00000000;
+        break;
+      }
+    }
+
     if (edge_left && edge_right)
     {
       backward();
-      _delay_ms(500);
+      _delay_ms(700);
       turnLeft(); // this used to be turn right
       _delay_ms(500);
     }
@@ -164,13 +173,13 @@ int main(void)
     {
       Serial.println("edge left and !edge right");
       turnRight();
-      _delay_ms(10);
+      _delay_ms(20);
     }
     else if (!edge_left && edge_right)
     {
       Serial.println("!edge left and edge right");
       turnLeft();
-      _delay_ms(10);
+      _delay_ms(20);
     }
     else
     {
@@ -183,32 +192,36 @@ int main(void)
       Serial.println("Detected opponent color");
       forward();
       // test how much to move forward!
-      _delay_ms(750);
+      _delay_ms(700);
       turnLeft();
-      _delay_ms(750);
+      _delay_ms(700);
       forward();
       // refine this based on how far we need to go in opponents half.
-      _delay_ms(1000);
+      _delay_ms(5000);
+
+      turnLeft();
+      _delay_ms(300);
     }
 
     // Stopping condition for milestone (4)
-    if (currentColor == homeColor && (edge_left && edge_right))
-    {
-      if (leftOpponent)
-      {
-        Serial.println("Stopping");
-        backward();
-        _delay_ms(100);
-        turnRight();
-        DDRD = 0b00000000;
-        break;
-      }
-    }
-    else if (timeReached)
-    // Automatic return after 50 seconds lapse.
-    {
-      Serial.println("Time Reached, heading back home");
-      forward(); // determine orientation first?
-    }
+    // if (currentColor == homeColor && (edge_left && edge_right))
+    // {
+    //   if (leftOpponent)
+    //   {
+    //     Serial.println("Stopping");
+    //     backward();
+    //     _delay_ms(300);
+    //     turnRight();
+    //     _delay_ms(200);
+    //     DDRD = 0b00000000;
+    //     break;
+    //   }
+    // }
+    // else if (timeReached)
+    // // Automatic return after 50 seconds lapse.
+    // {
+    //   Serial.println("Time Reached, heading back home");
+    //   forward(); // determine orientation first?
+    // }
   }
 }
