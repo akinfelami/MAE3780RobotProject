@@ -26,6 +26,8 @@ int BLUE = 1;
 int homeColor;
 bool leftOpponent;
 
+bool MadeTripAcrossOpponent;
+
 void forward()
 {
   DDRD = 0b01010000;  // pin 6 (left) forward and 4 forward(right)
@@ -126,12 +128,9 @@ int main(void)
   DDRB = 0b00000000; // ALL pins on B as inputs.
   Serial.begin(9600);
   initColor();
-  _delay_ms(5);
   // Start at the center and angle towards the right
   forward();
-  _delay_ms(100);
-  turnRight();
-  _delay_ms(100);
+  _delay_ms(200);
   homeColor = getColor();
   Serial.println(colorSensorPeriod);
 
@@ -140,12 +139,12 @@ int main(void)
     int currentColor = getColor();
     bool edge_left = PINB & PIN_QTI_LEFT;
     bool edge_right = PINB & PIN_QTI_RIGHT;
-    Serial.print("edge_left:");
-    Serial.print(edge_left);
-    Serial.println();
-    Serial.print("edge_right:");
-    Serial.print(edge_right);
-    Serial.println();
+    // Serial.print("edge_left:");
+    // Serial.print(edge_left);
+    // Serial.println();
+    // Serial.print("edge_right:");
+    // Serial.print(edge_right);
+    // Serial.println();
 
     if (edge_left && edge_right)
     {
@@ -180,19 +179,26 @@ int main(void)
         DDRD = 0b00000000;
         break;
       }
-      else if (currentColor !=homeColor){
+      else if ((currentColor !=homeColor) && !MadeTripAcrossOpponent){
         leftOpponent = true;
-        Serial.println("Detected opponent color");
-        _delay_ms(700);
+        forward();
+        _delay_ms(200);
         turnLeft();
         _delay_ms(700);
         forward();
-        // refine this based on how far we need to go in opponents half.
+        Serial.println("Moving forward in opponent side");
+        // // refine this based on how far we need to go in opponents half.
         _delay_ms(5000);
+         Serial.println("Turning left in opponent side");
         turnLeft();
-        _delay_ms(300);
+        _delay_ms(500);
         forward();
-        _delay_ms(100);
+         Serial.println("Now heading back home");
+        _delay_ms(500); // as much to 
+        MadeTripAcrossOpponent = true;
+      }
+      else{
+        forward();
       }
     }
 
