@@ -129,13 +129,11 @@ int main(void)
   _delay_ms(5);
   // Start at the center and angle towards the right
   forward();
-  _delay_ms(500);
+  _delay_ms(100);
   turnRight();
-  _delay_ms(200);
+  _delay_ms(100);
   homeColor = getColor();
   Serial.println(colorSensorPeriod);
-
-
 
   while (1)
   {
@@ -149,23 +147,10 @@ int main(void)
     Serial.print(edge_right);
     Serial.println();
 
-    // Turns left (90 degree) -> collect blocks on its way.
-    // When hit edge (turn back home)
-    // Timer for if 50 seconds -> go back
-
-    if(currentColor == homeColor){
-      if (leftOpponent){
-        forward();
-        // _delay_ms(50);
-        DDRD = 0b00000000;
-        break;
-      }
-    }
-
     if (edge_left && edge_right)
     {
       backward();
-      _delay_ms(700);
+      _delay_ms(500);
       turnLeft(); // this used to be turn right
       _delay_ms(500);
     }
@@ -183,45 +168,33 @@ int main(void)
     }
     else
     {
-      forward();
+      // forward();
+      if ((currentColor == homeColor) && !leftOpponent)
+      {
+        forward();
+      }
+      else if ((currentColor == homeColor) && leftOpponent)
+      {
+        forward();
+        _delay_ms(1000);
+        DDRD = 0b00000000;
+        break;
+      }
+      else if (currentColor !=homeColor){
+        leftOpponent = true;
+        Serial.println("Detected opponent color");
+        _delay_ms(700);
+        turnLeft();
+        _delay_ms(700);
+        forward();
+        // refine this based on how far we need to go in opponents half.
+        _delay_ms(5000);
+        turnLeft();
+        _delay_ms(300);
+        forward();
+        _delay_ms(100);
+      }
     }
 
-    if (currentColor != homeColor) // Bot recognizes color change -> (moves a little bit -> refined by testing)
-    {
-      leftOpponent = true;
-      Serial.println("Detected opponent color");
-      forward();
-      // test how much to move forward!
-      _delay_ms(700);
-      turnLeft();
-      _delay_ms(700);
-      forward();
-      // refine this based on how far we need to go in opponents half.
-      _delay_ms(5000);
-
-      turnLeft();
-      _delay_ms(300);
-    }
-
-    // Stopping condition for milestone (4)
-    // if (currentColor == homeColor && (edge_left && edge_right))
-    // {
-    //   if (leftOpponent)
-    //   {
-    //     Serial.println("Stopping");
-    //     backward();
-    //     _delay_ms(300);
-    //     turnRight();
-    //     _delay_ms(200);
-    //     DDRD = 0b00000000;
-    //     break;
-    //   }
-    // }
-    // else if (timeReached)
-    // // Automatic return after 50 seconds lapse.
-    // {
-    //   Serial.println("Time Reached, heading back home");
-    //   forward(); // determine orientation first?
-    // }
   }
 }
