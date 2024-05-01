@@ -16,7 +16,7 @@ int MAX_YELLOW_PERIOD = 128;
 int MIN_YELLOW_PERIOD = 35;
 
 // timer 0 with 1024 prescaler will count 0.0164 seconds, for 1 minute we need
-int TIME_TO_RETURN_IN_SECONDS = 50;
+int TIME_TO_RETURN_IN_SECONDS = 10;
 bool timeReached = false;
 int overFlowCounter = 0;
 
@@ -27,6 +27,7 @@ int homeColor;
 bool leftOpponent;
 
 bool MadeTripAcrossOpponent;
+int numberOfTrips;
 
 void forward()
 {
@@ -69,12 +70,15 @@ ISR(PCINT0_vect)
 }
 
 // Inteerrupt service routine (timer 0)
-ISR(TIMER0_OVF)
+ISR(TIMER0_OVF_vect)
 {
   overFlowCounter++;
   if ((overFlowCounter * 0.0164) >= TIME_TO_RETURN_IN_SECONDS)
   {
     timeReached = true;
+  }
+  if(timeReached){
+    DDRD = 0b00000000;
   }
 }
 
@@ -137,6 +141,8 @@ int main(void)
   while (1)
   {
     int currentColor = getColor();
+    Serial.println(colorSensorPeriod);
+    // Serial.println(currentColor);
     bool edge_left = PINB & PIN_QTI_LEFT;
     bool edge_right = PINB & PIN_QTI_RIGHT;
     // Serial.print("edge_left:");
@@ -145,6 +151,10 @@ int main(void)
     // Serial.print("edge_right:");
     // Serial.print(edge_right);
     // Serial.println();
+
+    if(timeReached){
+      break;
+    }
 
     if (edge_left && edge_right)
     {
@@ -167,7 +177,6 @@ int main(void)
     }
     else
     {
-      // forward();
       if ((currentColor == homeColor) && !leftOpponent)
       {
         forward();
@@ -176,10 +185,16 @@ int main(void)
       {
         forward();
         _delay_ms(1000);
-        DDRD = 0b00000000;
-        break;
+        backward();
+        _delay_ms(500);
+        turnRight();
+        _delay_ms(400);
+        leftOpponent=false;
+        MadeTripAcrossOpponent = false;
+        // DDRD = 0b00000000;
+        // break;
       }
-      else if ((currentColor !=homeColor) && !MadeTripAcrossOpponent){
+      else if ((currentColor != homeColor) && !MadeTripAcrossOpponent){
         leftOpponent = true;
         forward();
         _delay_ms(200);
