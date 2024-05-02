@@ -16,7 +16,7 @@ int MAX_YELLOW_PERIOD = 128;
 int MIN_YELLOW_PERIOD = 35;
 
 // timer 0 with 1024 prescaler will count 0.0164 seconds, for 1 minute we need
-int TIME_TO_RETURN_IN_SECONDS = 50;
+int TIME_TO_RETURN_IN_SECONDS = 60;
 bool timeReached = false;
 volatile int overFlowCounter = 0;
 
@@ -143,7 +143,7 @@ int main(void)
 
     if (timeReached)
     {
-      // DDRD = 0b00000000;
+      DDRD = 0b00000000;
       break;
     }
 
@@ -176,9 +176,9 @@ int main(void)
       else if ((currentColor == homeColor) && leftOpponent)
       {
         forward();
-        _delay_ms(1150);
+        _delay_ms(1250);
         backward();
-        _delay_ms(800);
+        _delay_ms(850);
         if (numberOfTrips % 2 == 0)
         {
           turnLeft();
@@ -210,7 +210,7 @@ int main(void)
           _delay_ms(580);
         }
         forward();
-        _delay_ms(4850);
+        _delay_ms(4800);
         if (numberOfTrips % 2 == 0)
         {
           turnLeft();
@@ -231,16 +231,4 @@ int main(void)
       }
     }
   }
-
-  // while (timeReached){
-  //       if (edge_left && edge_right)
-  //   {
-  //     backward();
-  //     _delay_ms(500);
-  //     // Serial.println("both black");
-  //     turnLeft(); // this used to be turn right
-  //     _delay_ms(500);
-  //   }
-
-  // }
 }
