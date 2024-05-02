@@ -20,12 +20,13 @@ int TIME_TO_RETURN_IN_SECONDS = 10;
 bool timeReached = false;
 volatile int overFlowCounter = 0;
 
+// Colors
 int YELLOW = 0;
 int BLUE = 1;
 
+// States
 int homeColor;
 bool leftOpponent;
-
 bool madeTripAcrossOpponent;
 int numberOfTrips;
 
@@ -118,7 +119,7 @@ void initCountDownTimer()
   TCCR0A = 0b00000000; // Normal Mode
   TCCR0B = 0b00001101; // 1024 pre-scalar
   TIMSK0 = 0b00000001;
-  TCNT0 = 0;           // reset timer
+  TCNT0 = 0; // reset timer
 }
 
 int main(void)
@@ -142,7 +143,7 @@ int main(void)
 
     if (timeReached)
     {
-      DDRD=0b00000000;
+      DDRD = 0b00000000;
       break;
     }
 
@@ -177,18 +178,27 @@ int main(void)
         _delay_ms(1000);
         backward();
         _delay_ms(500);
-        turnRight();
+        turnLeft();
         _delay_ms(400);
         leftOpponent = false;
         madeTripAcrossOpponent = false;
+        numberOfTrips++
       }
       else if ((currentColor != homeColor) && !madeTripAcrossOpponent)
       {
         leftOpponent = true;
         forward();
         _delay_ms(200);
-        turnLeft();
-        _delay_ms(700);
+        if (numberOfTrips % 2 == 0)
+        {
+          turnLeft();
+          _delay_ms(700);
+        }
+        else
+        {
+          turnRight();
+          _delay_ms(700);
+        }
         forward();
         _delay_ms(5000);
         turnLeft();
