@@ -16,7 +16,7 @@ int MAX_YELLOW_PERIOD = 128;
 int MIN_YELLOW_PERIOD = 35;
 
 // timer 0 with 1024 prescaler will count 0.0164 seconds, for 1 minute we need
-int TIME_TO_RETURN_IN_SECONDS = 10;
+int TIME_TO_RETURN_IN_SECONDS = 50;
 bool timeReached = false;
 volatile int overFlowCounter = 0;
 
@@ -137,7 +137,7 @@ int main(void)
 
   while (1)
   {
-    int currentColor = getColor();d);
+    int currentColor = getColor();
     bool edge_left = PINB & PIN_QTI_LEFT;
     bool edge_right = PINB & PIN_QTI_RIGHT;
 
@@ -151,18 +151,19 @@ int main(void)
     {
       backward();
       _delay_ms(500);
+      Serial.println("both black");
       turnLeft(); // this used to be turn right
       _delay_ms(500);
     }
     else if (edge_left && !edge_right)
     {
-      // Serial.println("edge left and !edge right");
+      Serial.println("edge left and !edge right");
       turnRight();
       _delay_ms(20);
     }
     else if (!edge_left && edge_right)
     {
-      // Serial.println("!edge left and edge right");
+      Serial.println("!edge left and edge right");
       turnLeft();
       _delay_ms(20);
     }
@@ -182,7 +183,7 @@ int main(void)
         _delay_ms(400);
         leftOpponent = false;
         madeTripAcrossOpponent = false;
-        numberOfTrips++
+        numberOfTrips++;
       }
       else if ((currentColor != homeColor) && !madeTripAcrossOpponent)
       {
