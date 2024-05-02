@@ -18,7 +18,7 @@ int MIN_YELLOW_PERIOD = 35;
 // timer 0 with 1024 prescaler will count 0.0164 seconds, for 1 minute we need
 int TIME_TO_RETURN_IN_SECONDS = 10;
 bool timeReached = false;
-int overFlowCounter = 0;
+volatile int overFlowCounter = 0;
 
 int YELLOW = 0;
 int BLUE = 1;
@@ -26,7 +26,7 @@ int BLUE = 1;
 int homeColor;
 bool leftOpponent;
 
-bool MadeTripAcrossOpponent;
+bool madeTripAcrossOpponent;
 int numberOfTrips;
 
 void forward()
@@ -77,15 +77,10 @@ ISR(TIMER0_OVF_vect)
   {
     timeReached = true;
   }
-  if(timeReached){
-    DDRD = 0b00000000;
-  }
 }
 
 void initColor()
 {
-  sei();
-
   // Initialize interrupts
   PCICR |= 0b00000001; // Enable PCIE0
 
@@ -121,7 +116,8 @@ void initCountDownTimer()
 {
 
   TCCR0A = 0b00000000; // Normal Mode
-  TCCR0B = 0b00000101; // 1024 pre-scalar
+  TCCR0B = 0b00001101; // 1024 pre-scalar
+  TIMSK0 = 0b00000001;
   TCNT0 = 0;           // reset timer
 }
 
@@ -132,27 +128,21 @@ int main(void)
   DDRB = 0b00000000; // ALL pins on B as inputs.
   Serial.begin(9600);
   initColor();
-  // Start at the center and angle towards the right
+  initCountDownTimer();
+  sei();
   forward();
-  _delay_ms(200);
+  _delay_ms(400);
   homeColor = getColor();
-  Serial.println(colorSensorPeriod);
 
   while (1)
   {
-    int currentColor = getColor();
-    Serial.println(colorSensorPeriod);
-    // Serial.println(currentColor);
+    int currentColor = getColor();d);
     bool edge_left = PINB & PIN_QTI_LEFT;
     bool edge_right = PINB & PIN_QTI_RIGHT;
-    // Serial.print("edge_left:");
-    // Serial.print(edge_left);
-    // Serial.println();
-    // Serial.print("edge_right:");
-    // Serial.print(edge_right);
-    // Serial.println();
 
-    if(timeReached){
+    if (timeReached)
+    {
+      DDRD=0b00000000;
       break;
     }
 
@@ -165,13 +155,13 @@ int main(void)
     }
     else if (edge_left && !edge_right)
     {
-      Serial.println("edge left and !edge right");
+      // Serial.println("edge left and !edge right");
       turnRight();
       _delay_ms(20);
     }
     else if (!edge_left && edge_right)
     {
-      Serial.println("!edge left and edge right");
+      // Serial.println("!edge left and edge right");
       turnLeft();
       _delay_ms(20);
     }
@@ -189,33 +179,28 @@ int main(void)
         _delay_ms(500);
         turnRight();
         _delay_ms(400);
-        leftOpponent=false;
-        MadeTripAcrossOpponent = false;
-        // DDRD = 0b00000000;
-        // break;
+        leftOpponent = false;
+        madeTripAcrossOpponent = false;
       }
-      else if ((currentColor != homeColor) && !MadeTripAcrossOpponent){
+      else if ((currentColor != homeColor) && !madeTripAcrossOpponent)
+      {
         leftOpponent = true;
         forward();
         _delay_ms(200);
         turnLeft();
         _delay_ms(700);
         forward();
-        Serial.println("Moving forward in opponent side");
-        // // refine this based on how far we need to go in opponents half.
         _delay_ms(5000);
-         Serial.println("Turning left in opponent side");
         turnLeft();
         _delay_ms(500);
         forward();
-         Serial.println("Now heading back home");
-        _delay_ms(500); // as much to 
-        MadeTripAcrossOpponent = true;
+        _delay_ms(500);
+        madeTripAcrossOpponent = true;
       }
-      else{
+      else
+      {
         forward();
       }
     }
-
   }
 }
