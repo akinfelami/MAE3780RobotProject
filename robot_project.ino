@@ -143,7 +143,7 @@ int main(void)
 
     if (timeReached)
     {
-      DDRD = 0b00000000;
+      // DDRD = 0b00000000;
       break;
     }
 
@@ -151,19 +151,19 @@ int main(void)
     {
       backward();
       _delay_ms(500);
-      Serial.println("both black");
+      // Serial.println("both black");
       turnLeft(); // this used to be turn right
       _delay_ms(500);
     }
     else if (edge_left && !edge_right)
     {
-      Serial.println("edge left and !edge right");
+      // Serial.println("edge left and !edge right");
       turnRight();
       _delay_ms(20);
     }
     else if (!edge_left && edge_right)
     {
-      Serial.println("!edge left and edge right");
+      // Serial.println("!edge left and edge right");
       turnLeft();
       _delay_ms(20);
     }
@@ -176,11 +176,20 @@ int main(void)
       else if ((currentColor == homeColor) && leftOpponent)
       {
         forward();
-        _delay_ms(1000);
+        _delay_ms(1150);
         backward();
-        _delay_ms(500);
-        turnLeft();
-        _delay_ms(400);
+        _delay_ms(800);
+        if (numberOfTrips % 2 == 0)
+        {
+          turnLeft();
+          _delay_ms(1200);
+        }
+        else
+        {
+          turnRight();
+          _delay_ms(1250);
+        }
+
         leftOpponent = false;
         madeTripAcrossOpponent = false;
         numberOfTrips++;
@@ -189,21 +198,29 @@ int main(void)
       {
         leftOpponent = true;
         forward();
-        _delay_ms(200);
+        _delay_ms(350);
         if (numberOfTrips % 2 == 0)
         {
           turnLeft();
-          _delay_ms(700);
+          _delay_ms(580);
         }
         else
         {
           turnRight();
-          _delay_ms(700);
+          _delay_ms(580);
         }
         forward();
-        _delay_ms(5000);
-        turnLeft();
-        _delay_ms(500);
+        _delay_ms(4850);
+        if (numberOfTrips % 2 == 0)
+        {
+          turnLeft();
+          _delay_ms(500);
+        }
+        else
+        {
+          turnRight();
+          _delay_ms(500);
+        }
         forward();
         _delay_ms(500);
         madeTripAcrossOpponent = true;
@@ -214,4 +231,16 @@ int main(void)
       }
     }
   }
+
+  // while (timeReached){
+  //       if (edge_left && edge_right)
+  //   {
+  //     backward();
+  //     _delay_ms(500);
+  //     // Serial.println("both black");
+  //     turnLeft(); // this used to be turn right
+  //     _delay_ms(500);
+  //   }
+
+  // }
 }
